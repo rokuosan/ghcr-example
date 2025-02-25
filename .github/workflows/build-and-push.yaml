@@ -14,6 +14,9 @@ on:
       - "Dockerfile"
   workflow_dispatch:
 
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository }}/sample
+
 jobs:
   next-build-and-push:
     runs-on: ubuntu-latest
@@ -38,7 +41,7 @@ jobs:
           # コンテナイメージの名前を指定する。
           # 以下の指定指定方法だと以下のようなイメージが作成される。
           # ghcr.io/username/repository-name/sample:tag
-          images: ghcr.io/${{ github.repository }}/sample
+          images: ${{ env.IMAGE_NAME }}
           # デフォルトブランチの時だけ latest タグをつけてそれ以外は日時とコミットハッシュをつける
           # ref: https://github.com/docker/metadata-action?tab=readme-ov-file#customizing
           tags: |
@@ -61,5 +64,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           provenance: false
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:cache
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:cache,mode=max
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
