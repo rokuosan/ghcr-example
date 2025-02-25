@@ -18,7 +18,7 @@ env:
   IMAGE_NAME: ghcr.io/${{ github.repository }}/sample
 
 jobs:
-  next-build-and-push:
+  build-and-push:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
